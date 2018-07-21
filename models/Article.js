@@ -11,10 +11,10 @@ var ArticleSchema = new Schema({
     type: String,
     required: true
   },
-  summary: {
-    type: String,
-    required: false
-  },
+  // image: {
+  //   type: String,
+  //   required: false
+  // },
   // uses ObjectId to link note to associated article
   comment: {
     type: Schema.Types.ObjectId,

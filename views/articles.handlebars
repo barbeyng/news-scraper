@@ -1,25 +1,20 @@
-<div class="main-banner">
-	<h1 class="main-title">EDM Headlines Scraper</h1>
-</div>
-<nav>
-	<a href="/scrape">Scrape EDM Articles</a>
-</nav>
-<div class="all-articles">
-	{{#each articles}}
-	<div class="article-element">
-		<h4 class="article-title">{{title}}</h4>
-		<p class="article-summary">{{summary}}</p>
-		<a class="link" href="{{link}}" target="_blank">Link to article</a>
-		<a class="link comment-link" href="">Add a comment</a>
-		<div class="all-comments" id="{{_id}}">
-			{{#each ../comments}}
-			<div class="comment">
-				<p class="comment-body">{{body}}</p>
-				<p class="comment-time">{{time}}</p>
-				<p class="comment-user">{{user}}</p>
-			</div>
-			{{/each}}
-		</div>
-	</div>
-	{{/each}}
+<div class="row">
+  {{#each articles}}
+  <div class="col-lg-4 pb-4 d-flex justify-content-center align-items-stretch">
+    <div class="card border-dark" style="width: 20rem;">
+      <div class="card-body">
+        <h5 class="card-title">{{title}}</h5>
+        <hr>
+        <div class="text-center">
+          <a href="{{link}}" target="blank">
+            <button type="button" class="btn btn-outline-secondary">Full article</button>
+          </a>
+          <a href="/articles/{{this.id}}" target="blank">
+            <button type="button" class="btn btn-outline-secondary">Comment</button>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {{/each}}
 </div>

@@ -13,28 +13,31 @@ router.get('/', function (req, res) {
 
 // Scrape headlines and links from news source using cheerio
 router.get('/scrape', function (req, res) {
-    axios.get('https://www.youredm.com/').then(function (response) {
+    axios.get('https://www.foodandwine.com/news').then(function (response) {
         // $ shorthand selector    
         var $ = cheerio.load(response.data);
         // Locate the articles and loop through each
-        $("div h2").each(function (i, element) {
+        $("div.media-body").each(function (i, element) {
             // Declare empty object variable to store data later
             var result = [];
             // Target headlines links and summaries to store into empty object as properties
             var title = $(this)
+                .children('.headline')
                 .children('a')
                 .text()
+                .trim()
             var link = $(this)
+                .children('.headline')
                 .children('a')
-                .attr("href");
-            var summary = $(this)
-                .parent()
-                .children('.cb-excerpt')
-                .text();
+                .attr('href');
+            // var image = $(this)
+            //     .parent()
+            //     .find('img')
+            //     .attr('src');
             result.push({
                 title: title,
-                link: link,
-                summary: summary
+                link: 'https://www.foodandwine.com/' + link,
+                // image: image
             });
 
             // Store the scraped data into Article db
@@ -65,7 +68,7 @@ router.get('articles/:id', function (req, res) {
     db.Article.findOne({ _id: req.params.id })
         .populate('comment')
         .then(function (dbArticle) {
-            res.json(dbArticle)
+            res.render('comments', { articles: dbArticle })
             // res.render('comments', dbArticle)
         })
         .catch(function (err) {
@@ -77,7 +80,7 @@ router.get('articles/:id', function (req, res) {
 router.post('/articles/:id', function (req, res) {
     db.Comment.create(req.body)
         .then(function (dbComment) {
-            return db.Article.findOneAndUpdate({ _id: req.params.id }, { comment: dbComment._id }, { new: true });
+            return db.Article.findOneAndUpdate({ _id: req.params.id }, { $push: { comment: dbComment._id } }, { new: true });
         })
         .then(function (dbArticle) {
             res.json(dbArticle);
@@ -85,6 +88,15 @@ router.post('/articles/:id', function (req, res) {
         .catch(function (err) {
             res.json(err);
         });
+});
+
+router.get('/delete/:id', function(req, res) {
+    db.Comment.remove({ _id: req.params.id }, function(err) {
+        if (err) {
+            console.log(err);
+            res.send(err);
+        }
+    });
 });
 
 module.exports = router;

@@ -3,9 +3,7 @@ var Schema = mongoose.Schema;
 
 // Schema constructor that creates new Note schema
 var CommentSchema = new Schema({
-  body: String,
-  user: String,
-  date: {type: Date, default: Date.now}
+  body: String
 });
 
 var Comment = mongoose.model('Comment', CommentSchema);

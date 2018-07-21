@@ -1,0 +1,14 @@
+body {
+    background-image: url('./images/lily-banse.jpg');
+    background-size: 100%;
+    background-attachment: fixed;
+}
+
+.jumbotron {
+    margin-top: 25px;
+    background-color: #ffffffb0;
+}
+
+a:hover {
+    text-decoration: none;
+}
