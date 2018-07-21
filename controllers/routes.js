@@ -13,24 +13,24 @@ router.get('/', function (req, res) {
 
 // Scrape headlines and links from news source using cheerio
 router.get('/scrape', function (req, res) {
-    axios.get('http://www.npr.org/').then(function (response) {
+    axios.get('https://www.youredm.com/').then(function (response) {
         // $ shorthand selector    
         var $ = cheerio.load(response.data);
         // Locate the articles and loop through each
-        $('div a h3').each(function (i, element) {
+        $("div h2").each(function (i, element) {
             // Declare empty object variable to store data later
-            var result = {};
+            var result = [];
             // Target headlines links and summaries to store into empty object as properties
-            result.title = $(element)
-                .text();
-            result.link = $(element)
-                .parent()
-                .attr('href');
-            result.summary = $(element)
-                .parent()
-                .next()
-                .children('p')
-                .text();
+            var title = $(this)
+                .children('a')
+                .text()
+            var link = $(this)
+                .children('a')
+                .attr("href");
+            result.push({
+                title: title,
+                link: link
+            });
 
             // Store the scraped data into Article db
             db.Article.create(result).then(function (dbArticle) {
@@ -46,7 +46,7 @@ router.get('/scrape', function (req, res) {
 });
 
 router.get('/articles', function (req, res) {
-    db.Article.find().sort({ _id: 1})
+    db.Article.find().sort({ _id: 1 })
         .then(function (dbArticle) {
             res.render('articles', { articles: dbArticle });
         })
