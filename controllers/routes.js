@@ -27,9 +27,14 @@ router.get('/scrape', function (req, res) {
             var link = $(this)
                 .children('a')
                 .attr("href");
+            var summary = $(this)
+                .parent()
+                .children('.cb-excerpt')
+                .text();
             result.push({
                 title: title,
-                link: link
+                link: link,
+                summary: summary
             });
 
             // Store the scraped data into Article db
