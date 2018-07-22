@@ -13,32 +13,28 @@ router.get('/', function (req, res) {
 
 // Scrape headlines and links from news source using cheerio
 router.get('/scrape', function (req, res) {
-    axios.get('https://www.foodandwine.com/news').then(function (response) {
+    axios.get('https://www.nytimes.com/topic/subject/food').then(function (response) {
         // $ shorthand selector    
         var $ = cheerio.load(response.data);
         // Locate the articles and loop through each
-        $("div.media-body").each(function (i, element) {
+        $("#latest-panel article.story.theme-summary").each(function (i, element) {
             // Declare empty object variable to store data later
-            var result = [];
+            var result = {};
             // Target headlines links and summaries to store into empty object as properties
-            var title = $(this)
-                .children('.headline')
-                .children('a')
+            result.title = $(this)
+                .find('h2.headline')
                 .text()
                 .trim()
-            var link = $(this)
-                .children('.headline')
+            result.link = $(this)
+                .children('.story-body')
                 .children('a')
                 .attr('href');
-            // var image = $(this)
-            //     .parent()
-            //     .find('img')
-            //     .attr('src');
-            result.push({
-                title: title,
-                link: 'https://www.foodandwine.com/' + link,
-                // image: image
-            });
+            result.summary = $(this)
+                .find('p.summary')
+                .text();
+            result.image = $(this)
+                .find('img')
+                .attr('src');
 
             // Store the scraped data into Article db
             db.Article.create(result).then(function (dbArticle) {
@@ -64,7 +60,7 @@ router.get('/articles', function (req, res) {
 });
 
 // Route that grabs article by id and note
-router.get('articles/:id', function (req, res) {
+router.get('/articles/:id', function (req, res) {
     db.Article.findOne({ _id: req.params.id })
         .populate('comment')
         .then(function (dbArticle) {
@@ -80,7 +76,7 @@ router.get('articles/:id', function (req, res) {
 router.post('/articles/:id', function (req, res) {
     db.Comment.create(req.body)
         .then(function (dbComment) {
-            return db.Article.findOneAndUpdate({ _id: req.params.id }, { $push: { comment: dbComment._id } }, { new: true });
+            return db.Article.findOneAndUpdate({ _id: req.params.id }, { comment: dbComment._id }, { new: true });
         })
         .then(function (dbArticle) {
             res.json(dbArticle);

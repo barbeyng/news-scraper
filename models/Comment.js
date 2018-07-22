@@ -3,11 +3,11 @@ var Schema = mongoose.Schema;
 
 // Schema constructor that creates new Note schema
 var CommentSchema = new Schema({
-  title: {
+  name: {
     type: String,
     required: true
   },
-  body: {
+  text: {
     type: String,
     required: true
   }
