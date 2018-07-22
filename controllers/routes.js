@@ -68,7 +68,7 @@ router.get('articles/:id', function (req, res) {
     db.Article.findOne({ _id: req.params.id })
         .populate('comment')
         .then(function (dbArticle) {
-            res.render('comments', { articles: dbArticle })
+            res.json(dbArticle)
             // res.render('comments', dbArticle)
         })
         .catch(function (err) {
@@ -88,15 +88,6 @@ router.post('/articles/:id', function (req, res) {
         .catch(function (err) {
             res.json(err);
         });
-});
-
-router.get('/delete/:id', function(req, res) {
-    db.Comment.remove({ _id: req.params.id }, function(err) {
-        if (err) {
-            console.log(err);
-            res.send(err);
-        }
-    });
 });
 
 module.exports = router;
